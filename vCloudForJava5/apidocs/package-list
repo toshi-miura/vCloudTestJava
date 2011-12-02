@@ -1,0 +1,17 @@
+com.vmware.vcloud.api.rest.schema
+com.vmware.vcloud.api.rest.schema.extension
+com.vmware.vcloud.api.rest.schema.ovf
+com.vmware.vcloud.api.rest.schema.ovf.environment
+com.vmware.vcloud.api.rest.schema.versioning
+com.vmware.vcloud.api.rest.schema_v1_0
+com.vmware.vcloud.api.rest.schema_v1_0.extension
+com.vmware.vcloud.sdk
+com.vmware.vcloud.sdk.admin
+com.vmware.vcloud.sdk.admin.extensions
+com.vmware.vcloud.sdk.constants
+com.vmware.vcloud.sdk.constants.query
+com.vmware.vcloud.sdk.maas
+com.vmware.vcloud.sdk_v1_0
+com.vmware.vcloud.sdk_v1_0.admin
+com.vmware.vcloud.sdk_v1_0.admin.extensions
+org.w3._2001.xmlschema

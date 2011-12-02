@@ -1,0 +1,9 @@
+INPUT:
+-----
+java FindvAppByIp vCloudURL user@organization password ipaddress
+java FindvAppByIp https://vcloud user@Organization password ipaddress
+
+OUTPUT:
+------
+vappname
+https://vcloud/api/vApp/vapp-123

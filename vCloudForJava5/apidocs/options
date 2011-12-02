@@ -1,0 +1,22 @@
+-classpath
+'/build/mts/release/bora-472414/cloud-sdk/java/vcloud-java-sdk/target/classes:/build/mts/release/bora-472414/cloud-sdk/java/rest-api-schemas/target/classes:/build/mts/release/bora-472414/cloud-sdk/java/vcloud-java-sdk/sdk/target/classes:/build/mts/release/bora-472414/cloud-sdk/java/vcloud-java-sdk/sample/target/classes:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/commons-cli/commons-cli/1.1/commons-cli-1.1.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/javax/xml/bind/jaxb-api/2.0/jaxb-api-2.0.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/com/sun/xml/bind/jaxb-impl/2.0.3/jaxb-impl-2.0.3.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/org/apache/httpcomponents/httpclient/4.1/httpclient-4.1.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/org/apache/httpcomponents/httpcore/4.1/httpcore-4.1.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/junit/junit/4.4/junit-4.4.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/commons-io/commons-io/1.2/commons-io-1.2.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/com/rabbitmq/amqp-client/2.3.1/amqp-client-2.3.1.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/javax/activation/activation/1.1/activation-1.1.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/javax/xml/bind/jsr173_api/1.0/jsr173_api-1.0.jar:/build/mts/release/bora-472414/cloud-sdk/java/lib/maven/commons-codec/commons-codec/1.4/commons-codec-1.4.jar:/build/mts/release/bora-472414/cloud-sdk/java/rest-api-schemas/target/rest-api-schemas-1.5.jar'
+-encoding
+'ANSI_X3.4-1968'
+-public
+-sourcepath
+'/build/mts/release/bora-472414/cloud-sdk/java/rest-api-schemas/src/main/java:/build/mts/release/bora-472414/cloud-sdk/java/vcloud-java-sdk/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2011. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'/build/mts/release/bora-472414/cloud-sdk/java/vcloud-java-sdk/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'VMware 						vCloudDirector JavaSDK 1.5.0'
+-use
+-version
+-windowtitle
+'VMware 						vCloudDirector JavaSDK 1.5.0'
