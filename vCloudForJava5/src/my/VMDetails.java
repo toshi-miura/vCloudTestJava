@@ -45,11 +45,9 @@ public class VMDetails {
 		}
 
 		// Client login
-		VcloudClient.setLogLevel(Level.OFF);
-		VcloudClient vcloudClient = new VcloudClient(args[0], Version.V1_5);
-		vcloudClient.registerScheme("https", 443,
-				FakeSSLSocketFactory.getInstance());
-		vcloudClient.login(args[1], args[2]);
+		VcloudClient vcloudClient = login(args);
+
+
 		HashMap<String, ReferenceType> orgsList = vcloudClient
 				.getOrgRefsByName();
 		for (ReferenceType orgRef : orgsList.values()) {
@@ -69,6 +67,27 @@ public class VMDetails {
 			}
 		}
 
+	}
+
+	/**
+	 *
+	 * @param args URL.user,pass
+	 * @return
+	 * @throws KeyManagementException
+	 * @throws UnrecoverableKeyException
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyStoreException
+	 * @throws VCloudException
+	 */
+	private static VcloudClient login(String[] args)
+			throws KeyManagementException, UnrecoverableKeyException,
+			NoSuchAlgorithmException, KeyStoreException, VCloudException {
+		VcloudClient.setLogLevel(Level.OFF);
+		VcloudClient vcloudClient = new VcloudClient(args[0], Version.V1_5);
+		vcloudClient.registerScheme("https", 443,
+				FakeSSLSocketFactory.getInstance());
+		vcloudClient.login(args[1], args[2]);
+		return vcloudClient;
 	}
 
 	private static void showVApp(VcloudClient vcloudClient,
