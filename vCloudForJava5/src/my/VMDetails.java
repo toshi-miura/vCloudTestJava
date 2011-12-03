@@ -54,9 +54,11 @@ public class VMDetails {
 			for (ReferenceType vdcRef : Organization
 					.getOrganizationByReference(vcloudClient, orgRef)
 					.getVdcRefs()) {
+
 				Vdc vdc = Vdc.getVdcByReference(vcloudClient, vdcRef);
 				System.out.println("Vdc : " + vdcRef.getName() + " : "
 						+ vdc.getResource().getAllocationModel());
+
 				for (ReferenceType vAppRef : Vdc.getVdcByReference(
 						vcloudClient, vdcRef).getVappRefs()) {
 
@@ -102,21 +104,7 @@ public class VMDetails {
 		// ------------
 
 		// ------------
-		ReferenceType owner = Vapp.getOwner(vcloudClient, vAppRef);
-		System.out.println(owner);
-
-		try {
-			User user = User
-					.getUserByReference(vcloudClient, owner);
-
-			UserType resource = user.getResource();
-
-			System.out.println("★" + resource.getEmailAddress());
-			System.out.println("★" + resource.getFullName());
-		} catch (Exception e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
+		vAppOwner(vcloudClient, vAppRef);
 
 		/**
 		 * AccessSettingsType settings = controlAccess
@@ -156,6 +144,26 @@ public class VMDetails {
 							+ disk.getHardDiskSize() + " Mb");
 			}
 
+		}
+
+	}
+
+	private static void vAppOwner(VcloudClient vcloudClient,
+			ReferenceType vAppRef) throws VCloudException {
+		ReferenceType owner = Vapp.getOwner(vcloudClient, vAppRef);
+		System.out.println(owner);
+
+		try {
+			User user = User
+					.getUserByReference(vcloudClient, owner);
+
+			UserType resource = user.getResource();
+
+			System.out.println("★" + resource.getEmailAddress());
+			System.out.println("★" + resource.getFullName());
+		} catch (Exception e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
 		}
 	}
 }
