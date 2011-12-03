@@ -129,23 +129,31 @@ public class VMDetails {
 		 */
 
 		Vapp vapp = Vapp.getVappByReference(vcloudClient, vAppRef);
+		showVMInfo(vapp);
+
+	}
+
+	private static void showVMInfo(Vapp vapp) throws VCloudException {
 		List<VM> vms = vapp.getChildrenVms();
 		for (VM vm : vms) {
-			System.out.println("		Vm : "
-					+ vm.getResource().getName());
-			System.out.println("			Status : " + vm.getVMStatus());
-			System.out.println("			CPU : "
-					+ vm.getCpu().getNoOfCpus());
-			System.out.println("			Memory : "
-					+ vm.getMemory().getMemorySize() + " Mb");
-			for (VirtualDisk disk : vm.getDisks()) {
-				if (disk.isHardDisk())
-					System.out.println("			HardDisk : "
-							+ disk.getHardDiskSize() + " Mb");
-			}
+			showVMInfo(vm);
 
 		}
+	}
 
+	private static void showVMInfo(VM vm) throws VCloudException {
+		System.out.println("		Vm : "
+				+ vm.getResource().getName());
+		System.out.println("			Status : " + vm.getVMStatus());
+		System.out.println("			CPU : "
+				+ vm.getCpu().getNoOfCpus());
+		System.out.println("			Memory : "
+				+ vm.getMemory().getMemorySize() + " Mb");
+		for (VirtualDisk disk : vm.getDisks()) {
+			if (disk.isHardDisk())
+				System.out.println("			HardDisk : "
+						+ disk.getHardDiskSize() + " Mb");
+		}
 	}
 
 	private static void vAppOwner(VcloudClient vcloudClient,
