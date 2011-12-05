@@ -13,6 +13,10 @@ import com.vmware.vcloud.api.rest.schema.UserType;
 import com.vmware.vcloud.api.rest.schema.VCloudExtensionType;
 
 /**
+ * TODO
+ * 権限の概念を管理すべきか・・？
+ * 元のモデルでは、別オブジェクトで管理していたが、
+ * 管理したくない。
  *
  * @author user
  *
@@ -245,7 +249,7 @@ public class User {
 	}
 
 	public String toString() {
-		return getId()+":"+getEmailAddress()+":"+getFullName();
+		return getNameInSource() +":"+getEmailAddress()+":"+getFullName();
 	}
 
 }

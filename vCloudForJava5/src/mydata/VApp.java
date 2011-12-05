@@ -1,9 +1,13 @@
 package mydata;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vmware.vcloud.api.rest.schema.AccessSettingType;
+import com.vmware.vcloud.api.rest.schema.AccessSettingsType;
+import com.vmware.vcloud.api.rest.schema.ControlAccessParamsType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.UserType;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -27,7 +31,7 @@ public class VApp {
 	private Map<String, mydata.VM> vmMap = new HashMap<String, mydata.VM>();
 
 	private mydata.User owner;
-	private List<mydata.User> users;
+	private List<mydata.User> users =new ArrayList<mydata.User>();
 
 	private VcloudClient vcloudClient;
 
@@ -67,7 +71,7 @@ public class VApp {
 
 		int sum = 0;
 		for (mydata.VM vm : vmMap.values()) {
-			sum = +vm.getCpu();
+			sum += vm.getCpu();
 		}
 		return sum;
 	}
@@ -75,7 +79,7 @@ public class VApp {
 	public int getMemorySizeMB() throws VCloudException {
 		int sum = 0;
 		for (mydata.VM vm : vmMap.values()) {
-			sum = +vm.getMemorySizeMB();
+			sum += vm.getMemorySizeMB();
 		}
 		return sum;
 
@@ -84,7 +88,7 @@ public class VApp {
 	public int getTotalHDDGB() throws VCloudException {
 		int sum = 0;
 		for (mydata.VM vm : vmMap.values()) {
-			sum = +vm.getTotalHDDGB();
+			sum += vm.getTotalHDDGB();
 		}
 		return sum;
 
@@ -94,16 +98,17 @@ public class VApp {
 	public String toString() {
 
 		try {
-			String r =
-					"APPNAME:	" + getName() + "\n" +
-					"owner:	" + owner	+ "\n" +
-					"VMNo:	" + vmMap.size() + "\n"+
-					"CPUNum:	" + getCpu() + "\n"+
-					"MemNum:	" + getMemorySizeMB() + "\n"+
-					"HDDNum:	" + getTotalHDDGB() + "\n"
-					;
+			String r = "APPNAME:	" + getName() + "\n" + "owner:	" + owner
+					+ "\n" + "VMNo:	" + vmMap.size() + "\n" + "CPUNum:	"
+					+ getCpu() + "\n" + "MemNum:	" + getMemorySizeMB() + "\n"
+					+ "HDDNum:	" + getTotalHDDGB() + "\n";
+			StringBuilder sbBuilder = new StringBuilder();
+			int i = 0;
+			for (mydata.VM vm : vmMap.values()) {
+				sbBuilder.append("no" + i++ + "\t").append(vm).append("\n");
+			}
 
-			return r;
+			return r + sbBuilder.toString();
 		} catch (VCloudException e) {
 
 			return e.getMessage();
@@ -126,10 +131,37 @@ public class VApp {
 		// OWNER関連
 		mydata.User owner = getVAppOwner();
 
-
 		this.owner = owner;
 
 		// TODO 権限関連
+		mapUser();
+
+	}
+
+	private void mapUser() throws VCloudException {
+
+		ControlAccessParamsType controlAccess = vapp.getControlAccess();
+		AccessSettingsType accessSettings = controlAccess.getAccessSettings();
+		List<AccessSettingType> accessSetting = accessSettings
+				.getAccessSetting();
+
+		for (AccessSettingType accessSettingType : accessSetting) {
+
+			ReferenceType subject = accessSettingType.getSubject();
+
+
+			User user = User.getUserByReference(vcloudClient, subject);
+			UserType resource = user.getResource();
+			mydata.User r = new mydata.User(resource);
+
+			users.add(r);
+
+
+
+
+
+
+		}
 
 	}
 
@@ -143,7 +175,7 @@ public class VApp {
 
 	private mydata.User getVAppOwner() {
 
-		ReferenceType vAppRef=vapp.getReference();
+		ReferenceType vAppRef = vapp.getReference();
 		mydata.User r;
 
 		try {

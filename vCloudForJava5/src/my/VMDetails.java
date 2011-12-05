@@ -167,6 +167,7 @@ public class VMDetails {
 
 			UserType resource = user.getResource();
 
+			System.out.println("★" + owner.getName());
 			System.out.println("★" + resource.getEmailAddress());
 			System.out.println("★" + resource.getFullName());
 		} catch (Exception e) {
