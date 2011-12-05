@@ -79,9 +79,6 @@ public class VMDetailsMapper {
 			throws VCloudException {
 
 
-
-
-
 		/*
 		 * 使えるなら、この辺のアトリビュートを管理用に使いたい
 		 *
@@ -91,7 +88,7 @@ public class VMDetailsMapper {
 		 * vAppRef.getVCloudExtension().size());
 		 */
 
-		//TODO アクセス可能なユーザの取得部分を作る。そいつらにメールをばらまきたい。
+
 
 
 		/*
@@ -119,7 +116,7 @@ public class VMDetailsMapper {
 
 		VApp app = new VApp(vapp,vcloudClient);
 
-		System.out.println(app);
+
 
 
 		return app;

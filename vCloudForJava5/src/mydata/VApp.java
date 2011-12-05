@@ -24,7 +24,7 @@ public class VApp {
 	private Vapp vapp;
 
 	private String extProjCode;
-	private Map<String, mydata.VM> vmMap=new HashMap<String, mydata.VM>();
+	private Map<String, mydata.VM> vmMap = new HashMap<String, mydata.VM>();
 
 	private mydata.User owner;
 	private List<mydata.User> users;
@@ -55,25 +55,55 @@ public class VApp {
 		return vmMap;
 	}
 
-
-
 	public mydata.User getOwner() {
 		return owner;
 	}
-
-
 
 	public List<mydata.User> getUsers() {
 		return users;
 	}
 
+	public int getCpu() throws VCloudException {
 
+		int sum = 0;
+		for (mydata.VM vm : vmMap.values()) {
+			sum = +vm.getCpu();
+		}
+		return sum;
+	}
+
+	public int getMemorySizeMB() throws VCloudException {
+		int sum = 0;
+		for (mydata.VM vm : vmMap.values()) {
+			sum = +vm.getMemorySizeMB();
+		}
+		return sum;
+
+	}
+
+	public int getTotalHDDGB() throws VCloudException {
+		int sum = 0;
+		for (mydata.VM vm : vmMap.values()) {
+			sum = +vm.getTotalHDDGB();
+		}
+		return sum;
+
+	}
 
 	@Override
 	public String toString() {
 
 		try {
-			return getName() + ":" + owner + ":" + vmMap.size();
+			String r =
+					"APPNAME:	" + getName() + "\n" +
+					"owner:	" + owner	+ "\n" +
+					"VMNo:	" + vmMap.size() + "\n"+
+					"CPUNum:	" + getCpu() + "\n"+
+					"MemNum:	" + getMemorySizeMB() + "\n"+
+					"HDDNum:	" + getTotalHDDGB() + "\n"
+					;
+
+			return r;
 		} catch (VCloudException e) {
 
 			return e.getMessage();
@@ -86,38 +116,34 @@ public class VApp {
 	}
 
 	private void init() throws VCloudException {
-		//VMに関するINIT
+		// VMに関するINIT
 		List<VM> vms = vapp.getChildrenVms();
 		for (VM vm : vms) {
 			mapVM(vm);
 
 		}
 
-		//OWNER関連
-		mydata.User owner = getVAppOwner( vapp.getOwner());
+		// OWNER関連
+		mydata.User owner = getVAppOwner();
 
-		System.out.println(owner);
-		this.owner=owner;
 
-		//TODO 権限関連
+		this.owner = owner;
 
+		// TODO 権限関連
 
 	}
-
-
 
 	private void mapVM(VM vmwareVm) throws VCloudException {
 
 		mydata.VM vm = new mydata.VM(vmwareVm);
-		System.out.println(vm);
+
 		vmMap.put(vm.getName(), vm);
-		System.out.println( vmMap.size());
 
 	}
 
-	private mydata.User getVAppOwner(
-			ReferenceType vAppRef) {
+	private mydata.User getVAppOwner() {
 
+		ReferenceType vAppRef=vapp.getReference();
 		mydata.User r;
 
 		try {
@@ -126,21 +152,16 @@ public class VApp {
 
 			UserType resource = user.getResource();
 
-			System.out.println(resource.getEmailAddress());
-			System.out.println(resource.getFullName());
-
 			r = new mydata.User(resource);
 		} catch (VCloudException e) {
 			// エラーの原因
 			// 現状見えているのは権限不足
 			// マスターユーザーのものは見えないようだ。
-			e.printStackTrace();
+
 			r = mydata.User.VCD_MASTER;
 		}
 
 		return r;
 	}
-
-
 
 }

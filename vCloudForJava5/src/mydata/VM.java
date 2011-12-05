@@ -58,7 +58,7 @@ public class VM {
 	public String toString() {
 
 		try {
-			return getName() + ":" + getCpu() + ":" + getMemorySizeMB() + ":"
+			return "VMINFO:	"+getName() + ":" + getCpu() + ":" + getMemorySizeMB() + ":"
 					+ getTotalHDDGB();
 		} catch (VCloudException e) {
 			return e.getMessage();
