@@ -39,6 +39,7 @@ public class User {
 		dummy.setFullName("DUMMY_FULENAME");
 		dummy.setAlertEmail("dummy.AlertEmail@gmail.com");
 		dummy.setEmailAddress("dummy.EmailAddress@gmail.com");
+		dummy.setTelephone("000-0000-0000");
 	}
 
 
@@ -249,7 +250,7 @@ public class User {
 	}
 
 	public String toString() {
-		return getNameInSource() +":"+getEmailAddress()+":"+getFullName();
+		return getNameInSource() +":"+getEmailAddress()+":"+getFullName()+":"+getTelephone();
 	}
 
 }

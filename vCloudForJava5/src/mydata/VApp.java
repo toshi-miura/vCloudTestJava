@@ -2,6 +2,7 @@ package mydata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -103,10 +104,17 @@ public class VApp {
 					+ getCpu() + "\n" + "MemNum:	" + getMemorySizeMB() + "\n"
 					+ "HDDNum:	" + getTotalHDDGB() + "\n";
 			StringBuilder sbBuilder = new StringBuilder();
+
 			int i = 0;
 			for (mydata.VM vm : vmMap.values()) {
 				sbBuilder.append("no" + i++ + "\t").append(vm).append("\n");
 			}
+
+			int j=0;
+			for (mydata.User user : users) {
+				sbBuilder.append("user" + j++ + "\t").append(user).append("\n");
+			}
+
 
 			return r + sbBuilder.toString();
 		} catch (VCloudException e) {
@@ -133,7 +141,7 @@ public class VApp {
 
 		this.owner = owner;
 
-		// TODO 権限関連
+
 		mapUser();
 
 	}
@@ -155,11 +163,6 @@ public class VApp {
 			mydata.User r = new mydata.User(resource);
 
 			users.add(r);
-
-
-
-
-
 
 		}
 
