@@ -119,6 +119,7 @@ public class VMDetailsMapper {
 
 		VApp app = new VApp(vapp,vcloudClient);
 
+		System.out.println(app);
 
 
 		return app;

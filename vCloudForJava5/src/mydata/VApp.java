@@ -55,9 +55,7 @@ public class VApp {
 		return vmMap;
 	}
 
-	public void setVmMap(Map<String, mydata.VM> vmMap) {
-		this.vmMap = vmMap;
-	}
+
 
 	public mydata.User getOwner() {
 		return owner;
@@ -96,7 +94,9 @@ public class VApp {
 		}
 
 		//OWNER関連
-		mydata.User owner = vAppOwner( vapp.getOwner());
+		mydata.User owner = getVAppOwner( vapp.getOwner());
+
+		System.out.println(owner);
 		this.owner=owner;
 
 		//TODO 権限関連
@@ -109,11 +109,13 @@ public class VApp {
 	private void mapVM(VM vmwareVm) throws VCloudException {
 
 		mydata.VM vm = new mydata.VM(vmwareVm);
+		System.out.println(vm);
 		vmMap.put(vm.getName(), vm);
+		System.out.println( vmMap.size());
 
 	}
 
-	private mydata.User vAppOwner(
+	private mydata.User getVAppOwner(
 			ReferenceType vAppRef) {
 
 		mydata.User r;
@@ -124,12 +126,15 @@ public class VApp {
 
 			UserType resource = user.getResource();
 
+			System.out.println(resource.getEmailAddress());
+			System.out.println(resource.getFullName());
+
 			r = new mydata.User(resource);
 		} catch (VCloudException e) {
 			// エラーの原因
 			// 現状見えているのは権限不足
 			// マスターユーザーのものは見えないようだ。
-
+			e.printStackTrace();
 			r = mydata.User.VCD_MASTER;
 		}
 

@@ -23,12 +23,18 @@ public class User {
 	public final static User VCD_MASTER = new User();
 
 
-	public User() {
+	/**
+	 * 通常は使わない
+	 */
+	private User() {
 		UserType dummy=new UserType();
 		this.vcdUserType = dummy;
 
-		dummy.setName("DUMMY_USER");
-		dummy.setAlertEmail("dummy@gmail.com");
+		dummy.setId("DUMMY_ID");
+		dummy.setName("DUMMY_NAME");
+		dummy.setFullName("DUMMY_FULENAME");
+		dummy.setAlertEmail("dummy.AlertEmail@gmail.com");
+		dummy.setEmailAddress("dummy.EmailAddress@gmail.com");
 	}
 
 
