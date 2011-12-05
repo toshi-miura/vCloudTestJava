@@ -66,6 +66,7 @@ public class VMDetailsMapper {
 						vcloudClient, vdcRef).getVappRefs()) {
 
 					Vapp vApp = mapVApp( vAppRef);
+					System.out.println(vApp);
 
 				}
 
@@ -74,12 +75,12 @@ public class VMDetailsMapper {
 
 	}
 
-	private Vapp mapVApp(  ReferenceType vAppRef)
+	public Vapp mapVApp(  ReferenceType vAppRef)
 			throws VCloudException {
 
-		VApp app = new VApp();
 
-		app.setName(vAppRef.getName());
+
+
 
 		/*
 		 * 使えるなら、この辺のアトリビュートを管理用に使いたい
@@ -90,10 +91,12 @@ public class VMDetailsMapper {
 		 * vAppRef.getVCloudExtension().size());
 		 */
 
-		mydata.User owner = vAppOwner( vAppRef);
+		//TODO アクセス可能なユーザの取得部分を作る。そいつらにメールをばらまきたい。
 
 
-		/**
+		/*
+		 * 1.0の時のコード
+		 *
 		 * AccessSettingsType settings = controlAccess .getAccessSettings();
 		 *
 		 * if (settings != null) {
@@ -113,54 +116,15 @@ public class VMDetailsMapper {
 		 */
 
 		Vapp vapp = Vapp.getVappByReference(vcloudClient, vAppRef);
-		showVMInfo(vapp);
+		VApp app = new VApp(vapp,vcloudClient);
+
+
 
 		return vapp;
 
 	}
 
-	private void showVMInfo(Vapp vapp) throws VCloudException {
-		List<VM> vms = vapp.getChildrenVms();
-		for (VM vm : vms) {
-			showVMInfo(vm);
 
-		}
-	}
 
-	private void showVMInfo(VM vm) throws VCloudException {
-		System.out.println("		Vm : " + vm.getResource().getName());
-		System.out.println("			Status : " + vm.getVMStatus());
-		System.out.println("			CPU : " + vm.getCpu().getNoOfCpus());
-		System.out.println("			Memory : " + vm.getMemory().getMemorySize()
-				+ " Mb");
-		for (VirtualDisk disk : vm.getDisks()) {
-			if (disk.isHardDisk())
-				System.out.println("			HardDisk : " + disk.getHardDiskSize()
-						+ " Mb");
-		}
-	}
 
-	private mydata.User vAppOwner(
-			ReferenceType vAppRef) {
-
-		mydata.User r;
-
-		try {
-			ReferenceType owner = Vapp.getOwner(vcloudClient, vAppRef);
-			System.out.println(owner);
-			User user = User.getUserByReference(vcloudClient, owner);
-
-			UserType resource = user.getResource();
-
-			r = new mydata.User(resource);
-		} catch (VCloudException e) {
-			// エラーの原因
-			// 現状見えているのは権限不足
-			// マスターユーザーのものは見えないようだ。
-
-			r = mydata.User.VCD_MASTER;
-		}
-
-		return r;
-	}
 }

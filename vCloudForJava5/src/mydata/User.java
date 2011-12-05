@@ -239,7 +239,7 @@ public class User {
 	}
 
 	public String toString() {
-		return vcdUserType.toString();
+		return getId()+":"+getEmailAddress()+":"+getFullName();
 	}
 
 }

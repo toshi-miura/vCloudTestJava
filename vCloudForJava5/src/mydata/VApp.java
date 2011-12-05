@@ -3,44 +3,136 @@ package mydata;
 import java.util.List;
 import java.util.Map;
 
+import com.vmware.vcloud.api.rest.schema.ReferenceType;
+import com.vmware.vcloud.api.rest.schema.UserType;
+import com.vmware.vcloud.sdk.VCloudException;
+import com.vmware.vcloud.sdk.VM;
+import com.vmware.vcloud.sdk.Vapp;
+import com.vmware.vcloud.sdk.VcloudClient;
+import com.vmware.vcloud.sdk.VirtualDisk;
+import com.vmware.vcloud.sdk.admin.User;
+
+/**
+ * 目的： 必要なパラメータに関しアクセスを簡易化する。 通信が絡むと思われるところをキャッシュする。 必要な拡張フィールドを定義する
+ *
+ * @author user
+ *
+ */
 public class VApp {
 
-	private String name;
+	private Vapp vapp;
+
 	private String extProjCode;
 	private Map<String, VM> vmMap;
 
-	private User owner;
-	private List<User> users;
-	public String getName() {
-		return name;
+	private mydata.User owner;
+	private List<mydata.User> users;
+
+	private VcloudClient vcloudClient;
+
+	public VApp(Vapp vapp, VcloudClient vcloudClient) {
+		super();
+		this.vapp = vapp;
+		this.vcloudClient = vcloudClient;
 	}
-	public void setName(String name) {
-		this.name = name;
+
+	public String getName() throws VCloudException {
+		return vapp.getVdcReference().getName();
 	}
+
 	public String getExtProjCode() {
 		return extProjCode;
 	}
+
 	public void setExtProjCode(String extProjCode) {
 		this.extProjCode = extProjCode;
 	}
+
 	public Map<String, VM> getVmMap() {
 		return vmMap;
 	}
+
 	public void setVmMap(Map<String, VM> vmMap) {
 		this.vmMap = vmMap;
 	}
-	public User getOwner() {
+
+	public mydata.User getOwner() {
 		return owner;
 	}
-	public void setOwner(User owner) {
-		this.owner = owner;
-	}
-	public List<User> getUsers() {
+
+
+
+	public List<mydata.User> getUsers() {
 		return users;
 	}
-	public void setUsers(List<User> users) {
-		this.users = users;
+
+
+
+	@Override
+	public String toString() {
+
+		try {
+			return getName() + ":" + owner + ":" + vmMap.size();
+		} catch (VCloudException e) {
+
+			return e.getMessage();
+		}
+	}
+
+	public void setVapp(Vapp vapp) throws VCloudException {
+		this.vapp = vapp;
+		init();
+	}
+
+	private void init() throws VCloudException {
+		//VMに関するINIT
+		List<VM> vms = vapp.getChildrenVms();
+		for (VM vm : vms) {
+			mapVM(vm);
+
+		}
+
+		mydata.User owner = vAppOwner( vapp.getOwner());
+		this.owner=owner;
+
+
 	}
 
 
+
+	private void mapVM(VM vm) throws VCloudException {
+		System.out.println("		Vm : " + vm.getResource().getName());
+		System.out.println("			Status : " + vm.getVMStatus());
+		System.out.println("			CPU : " + vm.getCpu().getNoOfCpus());
+		System.out.println("			Memory : " + vm.getMemory().getMemorySize()
+				+ " Mb");
+		for (VirtualDisk disk : vm.getDisks()) {
+			if (disk.isHardDisk())
+				System.out.println("			HardDisk : " + disk.getHardDiskSize()
+						+ " Mb");
+		}
+	}
+
+	private mydata.User vAppOwner(
+			ReferenceType vAppRef) {
+
+		mydata.User r;
+
+		try {
+			ReferenceType owner = Vapp.getOwner(vcloudClient, vAppRef);
+			User user = User.getUserByReference(vcloudClient, owner);
+
+			UserType resource = user.getResource();
+
+			r = new mydata.User(resource);
+		} catch (VCloudException e) {
+			// エラーの原因
+			// 現状見えているのは権限不足
+			// マスターユーザーのものは見えないようだ。
+
+			r = mydata.User.VCD_MASTER;
+		}
+
+		return r;
+	}
 }

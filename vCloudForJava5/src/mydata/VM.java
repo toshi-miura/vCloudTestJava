@@ -1,5 +1,8 @@
 package mydata;
 
+import com.vmware.vcloud.sdk.VCloudException;
+import com.vmware.vcloud.sdk.constants.VMStatus;
+
 /**
  * VMレベルでの管理をするか要検討。
  * 仕様を単純化し、VAPPのレイヤーでしか対応しない方法は一考の余地あり。
@@ -8,6 +11,38 @@ package mydata;
  *
  */
 public class VM {
+
+	private com.vmware.vcloud.sdk.VM vm;
+
+	public VM(com.vmware.vcloud.sdk.VM vm) {
+		super();
+		this.vm = vm;
+	}
+
+	public com.vmware.vcloud.sdk.VM getRawVm() {
+		return vm;
+	}
+
+	public String getName(){
+		return vm.getResource().getName();
+	}
+
+	public VMStatus getStatus(){
+		return vm.getVMStatus();
+	}
+
+	public int getCpu() throws VCloudException{
+		return vm.getCpu().getNoOfCpus();
+	}
+
+	public int getMemorySizeMB() throws VCloudException{
+		return vm.getMemory().getMemorySize().intValue();
+	}
+
+
+
+
+
 
 
 
