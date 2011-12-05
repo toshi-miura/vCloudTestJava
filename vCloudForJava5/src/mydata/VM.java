@@ -1,6 +1,7 @@
 package mydata;
 
 import com.vmware.vcloud.sdk.VCloudException;
+import com.vmware.vcloud.sdk.VirtualDisk;
 import com.vmware.vcloud.sdk.constants.VMStatus;
 
 /**
@@ -37,6 +38,19 @@ public class VM {
 
 	public int getMemorySizeMB() throws VCloudException{
 		return vm.getMemory().getMemorySize().intValue();
+	}
+
+	public int getTotalHDDGB() throws VCloudException{
+		int sum = 0;
+		for (VirtualDisk disk : vm.getDisks()) {
+			if (disk.isHardDisk()){
+
+				sum +=disk.getHardDiskSize().intValue();
+			}
+		}
+
+
+		return sum/1000;
 	}
 
 

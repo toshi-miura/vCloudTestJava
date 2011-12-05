@@ -1,5 +1,6 @@
 package mydata;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,21 +24,23 @@ public class VApp {
 	private Vapp vapp;
 
 	private String extProjCode;
-	private Map<String, VM> vmMap;
+	private Map<String, mydata.VM> vmMap=new HashMap<String, mydata.VM>();
 
 	private mydata.User owner;
 	private List<mydata.User> users;
 
 	private VcloudClient vcloudClient;
 
-	public VApp(Vapp vapp, VcloudClient vcloudClient) {
+	public VApp(Vapp vapp, VcloudClient vcloudClient) throws VCloudException {
 		super();
 		this.vapp = vapp;
+
 		this.vcloudClient = vcloudClient;
+		init();
 	}
 
 	public String getName() throws VCloudException {
-		return vapp.getVdcReference().getName();
+		return vapp.getReference().getName();
 	}
 
 	public String getExtProjCode() {
@@ -48,11 +51,11 @@ public class VApp {
 		this.extProjCode = extProjCode;
 	}
 
-	public Map<String, VM> getVmMap() {
+	public Map<String, mydata.VM> getVmMap() {
 		return vmMap;
 	}
 
-	public void setVmMap(Map<String, VM> vmMap) {
+	public void setVmMap(Map<String, mydata.VM> vmMap) {
 		this.vmMap = vmMap;
 	}
 
@@ -92,25 +95,22 @@ public class VApp {
 
 		}
 
+		//OWNER関連
 		mydata.User owner = vAppOwner( vapp.getOwner());
 		this.owner=owner;
+
+		//TODO 権限関連
 
 
 	}
 
 
 
-	private void mapVM(VM vm) throws VCloudException {
-		System.out.println("		Vm : " + vm.getResource().getName());
-		System.out.println("			Status : " + vm.getVMStatus());
-		System.out.println("			CPU : " + vm.getCpu().getNoOfCpus());
-		System.out.println("			Memory : " + vm.getMemory().getMemorySize()
-				+ " Mb");
-		for (VirtualDisk disk : vm.getDisks()) {
-			if (disk.isHardDisk())
-				System.out.println("			HardDisk : " + disk.getHardDiskSize()
-						+ " Mb");
-		}
+	private void mapVM(VM vmwareVm) throws VCloudException {
+
+		mydata.VM vm = new mydata.VM(vmwareVm);
+		vmMap.put(vm.getName(), vm);
+
 	}
 
 	private mydata.User vAppOwner(
@@ -135,4 +135,7 @@ public class VApp {
 
 		return r;
 	}
+
+
+
 }

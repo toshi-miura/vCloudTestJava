@@ -65,7 +65,7 @@ public class VMDetailsMapper {
 				for (ReferenceType vAppRef : Vdc.getVdcByReference(
 						vcloudClient, vdcRef).getVappRefs()) {
 
-					Vapp vApp = mapVApp( vAppRef);
+					VApp vApp = mapVApp( vAppRef);
 					System.out.println(vApp);
 
 				}
@@ -75,7 +75,7 @@ public class VMDetailsMapper {
 
 	}
 
-	public Vapp mapVApp(  ReferenceType vAppRef)
+	public VApp mapVApp(  ReferenceType vAppRef)
 			throws VCloudException {
 
 
@@ -116,11 +116,12 @@ public class VMDetailsMapper {
 		 */
 
 		Vapp vapp = Vapp.getVappByReference(vcloudClient, vAppRef);
+
 		VApp app = new VApp(vapp,vcloudClient);
 
 
 
-		return vapp;
+		return app;
 
 	}
 
