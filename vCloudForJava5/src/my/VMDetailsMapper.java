@@ -7,6 +7,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import mydata.VApp;
 
@@ -14,6 +17,8 @@ import org.apache.http.HttpException;
 
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.UserType;
+import com.vmware.vcloud.api.rest.schema.VCloudExtensionType;
+import com.vmware.vcloud.sdk.Metadata;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.VM;
@@ -79,40 +84,42 @@ public class VMDetailsMapper {
 			throws VCloudException {
 
 
-		/*
-		 * 使えるなら、この辺のアトリビュートを管理用に使いたい
-		 *
-		 * System.out.println("	Vapp_OtherAttributes : " +
-		 * vAppRef.getOtherAttributes().size());
-		 * System.out.println("	Vapp_VCloudExtension : " +
-		 * vAppRef.getVCloudExtension().size());
-		 */
+		  System.out.println("	Vapp_OtherAttributes : " +
+		  vAppRef.getOtherAttributes().size());
+		  System.out.println("	Vapp_VCloudExtension : " +
+		  vAppRef.getVCloudExtension().size());
 
 
 
+		  // vcloudClient.getVcloudAdmin()ext.
+		  // vcloudClient.getVcloudAdminExtension().
 
-		/*
-		 * 1.0の時のコード
-		 *
-		 * AccessSettingsType settings = controlAccess .getAccessSettings();
-		 *
-		 * if (settings != null) {
-		 *
-		 * for (AccessSettingType set : settings .getAccessSetting()) {
-		 * AccessLevelType accessLevel = set.getAccessLevel();
-		 *
-		 *
-		 * System.out.println("	Vapp_AccessLevel : " + accessLevel.name() + "\t"
-		 * + set.getSubject().getHref()); User user =
-		 * User.getUserByReference(vcloudClient, set.getSubject());
-		 * System.out.println("	Vapp_UserInfoMail : " +
-		 * user.getResource().getEmailAddress());
-		 * System.out.println("	Vapp_UserInfo : " +
-		 * user.getResource().getName()); } }else{
-		 * System.out.println("	Vapp_ACC_INFO_NULL : "); }
-		 */
+
+
+		//TODO
+		//説明のフィールドを利用する手もあり
+
+
+
 
 		Vapp vapp = Vapp.getVappByReference(vcloudClient, vAppRef);
+
+		Metadata metadata = vapp.getMetadata();
+
+		System.out.println("★"+ metadata.getMetadataEntries().size());
+		
+		Set<Entry<String,String>> entrySet = metadata.getMetadataEntries().entrySet();
+		for (Entry<String,String> e : entrySet) {
+			System.out.println(e.getKey()+"    "+e.getValue());
+
+		}
+
+
+		metadata.updateMetadataEntry("登録済み", "YES");
+		metadata.updateMetadataEntry("プロジェクトは？", "Cです。");
+		metadata.updateMetadataEntry("課金額は？", "XXXXです");
+		metadata.updateMetadataEntry("ほげほげ", "ほげほげ");
+
 
 		VApp app = new VApp(vapp,vcloudClient);
 
