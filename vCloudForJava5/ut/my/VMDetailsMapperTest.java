@@ -1,6 +1,7 @@
 package my;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -16,16 +17,21 @@ import org.apache.http.HttpException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.vmware.vcloud.sdk.VCloudException;
-
 import utconf.Conf;
 
+import com.vmware.vcloud.sdk.VCloudException;
+
+/**
+ *
+ * @author user
+ *
+ */
 public class VMDetailsMapperTest {
 
 	private static VMDetailsMapper mapper;
 
 	@BeforeClass
-	public static void  beforClass() throws Exception {
+	public static void beforClass() throws Exception {
 		try {
 			mapper = new VMDetailsMapper(Conf.HOST, Conf.USER, Conf.PASS);
 			mapper.run();
@@ -67,24 +73,25 @@ public class VMDetailsMapperTest {
 		}
 
 	}
+
 	@Test
 	public void testGetVappSetByUser1() throws KeyManagementException,
 			UnrecoverableKeyException, NoSuchAlgorithmException,
 			KeyStoreException, VCloudException, HttpException, IOException {
-		System.out.println("testGetVappSetByUser[miura] --------------------------------");
+		System.out
+				.println("testGetVappSetByUser[miura] --------------------------------");
 
 		{
-			 Set<VApp> vappSet = mapper.getVappSetByUser("KAIGIV5","miura");
+			Set<VApp> vappSet = mapper.getVappSetByUser("KAIGIV5", "miura");
 
 			for (VApp vApp : vappSet) {
 				System.out.println(vApp);
 				assertTrue(true);
 			}
-			if(vappSet.size()==0){
+			if (vappSet.size() == 0) {
 				fail();
 			}
 		}
-
 
 	}
 
@@ -92,23 +99,22 @@ public class VMDetailsMapperTest {
 	public void testGetVappSetByUser2() throws KeyManagementException,
 			UnrecoverableKeyException, NoSuchAlgorithmException,
 			KeyStoreException, VCloudException, HttpException, IOException {
-		System.out.println("testGetVappSetByUser[fujita] --------------------------------");
+		System.out
+				.println("testGetVappSetByUser[fujita] --------------------------------");
 
 		{
-			 Set<VApp> vappSet = mapper.getVappSetByUser("KAIGIV5","fujita");
+			Set<VApp> vappSet = mapper.getVappSetByUser("KAIGIV5", "fujita");
 
 			for (VApp vApp : vappSet) {
 				System.out.println(vApp);
 				assertTrue(true);
 			}
-			if(vappSet.size()==0){
+			if (vappSet.size() == 0) {
 				fail();
 			}
 		}
 
-
 	}
-
 
 	@Test
 	public void testGetVappMap() throws KeyManagementException,
@@ -117,7 +123,8 @@ public class VMDetailsMapperTest {
 
 		{
 
-			System.out.println("testGetVappMap --------------------------------");
+			System.out
+					.println("testGetVappMap --------------------------------");
 			HashMap<String, Set<VApp>> vappMap = mapper.getVappMap();
 
 			for (String str : vappMap.keySet()) {

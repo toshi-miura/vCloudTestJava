@@ -7,9 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import mydata.VApp;
@@ -17,26 +14,24 @@ import mydata.VApp;
 import org.apache.http.HttpException;
 
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
-import com.vmware.vcloud.api.rest.schema.UserType;
-import com.vmware.vcloud.api.rest.schema.VCloudExtensionType;
-import com.vmware.vcloud.sdk.Metadata;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.VCloudException;
-import com.vmware.vcloud.sdk.VM;
 import com.vmware.vcloud.sdk.Vapp;
 import com.vmware.vcloud.sdk.VcloudClient;
 import com.vmware.vcloud.sdk.Vdc;
-import com.vmware.vcloud.sdk.VirtualDisk;
-import com.vmware.vcloud.sdk.admin.User;
 
 /**
- * TODO シングルトン的にする。 キャッシュのマネージャ的なものにする 耐久試験（接続維持時間）を調べる clientのリロード機能を入れる
+ * TODO
+ * <li>シングルトン的にする。</li>
+ * <li>キャッシュのマネージャ的なものにする</li>
+ * <li>耐久試験（接続維持時間）を調べる</li>
+ * <li>clientのリロード機能を入れる</li>
  *
  *
  */
 public class VMDetailsMapper {
 
-	private VcloudClient vcloudClient;
+	private final VcloudClient vcloudClient;
 
 	public VMDetailsMapper(VcloudClient vcloudClient) {
 		this.vcloudClient = vcloudClient;
@@ -48,7 +43,7 @@ public class VMDetailsMapper {
 		this.vcloudClient = Util.login(url, user, pass);
 	}
 
-	private HashMap<String, Set<VApp>> vappMap = new HashMap<String, Set<VApp>>();
+	private final HashMap<String, Set<VApp>> vappMap = new HashMap<String, Set<VApp>>();
 
 	public void run() throws HttpException, VCloudException, IOException,
 			KeyManagementException, NoSuchAlgorithmException,
@@ -82,7 +77,7 @@ public class VMDetailsMapper {
 		if (set == null) {
 			set = new HashSet<VApp>();
 			vappMap.put(vcdName, set);
-			System.out.println("PUT NEW VCD:" + vcdName);
+
 		}
 		set.add(app);
 
