@@ -74,7 +74,7 @@ public class VMDetailsMapper {
 					VApp vApp = mapVApp( vAppRef);
 
 					put(vdcRef.getName() , vApp);
-					System.out.println(vApp);
+
 
 				}
 
@@ -93,7 +93,7 @@ public class VMDetailsMapper {
 			System.out.println("PUT NEW VCD:"+vcdName);
 		}
 		set.add(app);
-		System.out.println(set.size());
+
 
 	}
 

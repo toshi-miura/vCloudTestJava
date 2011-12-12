@@ -33,7 +33,7 @@ public class VApp {
 	private Map<String, mydata.VM> vmMap = new HashMap<String, mydata.VM>();
 
 	private mydata.User owner;
-	private List<mydata.User> users =new ArrayList<mydata.User>();
+	private List<mydata.User> users = new ArrayList<mydata.User>();
 
 	private VcloudClient vcloudClient;
 
@@ -44,8 +44,6 @@ public class VApp {
 	 */
 	private String _name;
 
-
-
 	public VApp(Vapp vapp, VcloudClient vcloudClient) throws VCloudException {
 		super();
 		this.vapp = vapp;
@@ -55,19 +53,15 @@ public class VApp {
 		init();
 	}
 
-
-	protected void setMetadata(String k,String v) throws VCloudException{
+	protected void setMetadata(String k, String v) throws VCloudException {
 
 		metadata.updateMetadataEntry(k, v);
 	}
 
-	protected HashMap<String,String> getMetadata() throws VCloudException{
+	protected HashMap<String, String> getMetadata() throws VCloudException {
 
 		return metadata.getMetadataEntries();
 	}
-
-
-
 
 	public String getName() throws VCloudException {
 		return vapp.getReference().getName();
@@ -135,11 +129,10 @@ public class VApp {
 				sbBuilder.append("no" + i++ + "\t").append(vm).append("\n");
 			}
 
-			int j=0;
+			int j = 0;
 			for (mydata.User user : users) {
 				sbBuilder.append("user" + j++ + "\t").append(user).append("\n");
 			}
-
 
 			return r + sbBuilder.toString();
 		} catch (VCloudException e) {
@@ -154,7 +147,7 @@ public class VApp {
 	}
 
 	private void init() throws VCloudException {
-		_name=getName();
+		_name = getName();
 
 		// VMに関するINIT
 		List<VM> vms = vapp.getChildrenVms();
@@ -168,10 +161,7 @@ public class VApp {
 
 		this.owner = owner;
 
-
 		mapUser();
-
-
 
 	}
 
@@ -179,20 +169,22 @@ public class VApp {
 
 		ControlAccessParamsType controlAccess = vapp.getControlAccess();
 		AccessSettingsType accessSettings = controlAccess.getAccessSettings();
-		List<AccessSettingType> accessSetting = accessSettings
-				.getAccessSetting();
 
-		for (AccessSettingType accessSettingType : accessSetting) {
+		if (accessSettings != null) {
+			List<AccessSettingType> accessSetting = accessSettings
+					.getAccessSetting();
 
-			ReferenceType subject = accessSettingType.getSubject();
+			for (AccessSettingType accessSettingType : accessSetting) {
 
+				ReferenceType subject = accessSettingType.getSubject();
 
-			User user = User.getUserByReference(vcloudClient, subject);
-			UserType resource = user.getResource();
-			mydata.User r = new mydata.User(resource);
+				User user = User.getUserByReference(vcloudClient, subject);
+				UserType resource = user.getResource();
+				mydata.User r = new mydata.User(resource);
 
-			users.add(r);
+				users.add(r);
 
+			}
 		}
 
 	}
@@ -228,7 +220,6 @@ public class VApp {
 		return r;
 	}
 
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -246,7 +237,6 @@ public class VApp {
 		return true;
 	}
 
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -254,7 +244,5 @@ public class VApp {
 		result = prime * result + ((_name == null) ? 0 : _name.hashCode());
 		return result;
 	}
-
-
 
 }
