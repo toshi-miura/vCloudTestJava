@@ -11,6 +11,7 @@ import com.vmware.vcloud.api.rest.schema.AccessSettingsType;
 import com.vmware.vcloud.api.rest.schema.ControlAccessParamsType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.UserType;
+import com.vmware.vcloud.sdk.Metadata;
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.VM;
 import com.vmware.vcloud.sdk.Vapp;
@@ -36,13 +37,37 @@ public class VApp {
 
 	private VcloudClient vcloudClient;
 
+	private Metadata metadata;
+
+	/**
+	 * equals実装用のテンポラリフィールド
+	 */
+	private String _name;
+
+
+
 	public VApp(Vapp vapp, VcloudClient vcloudClient) throws VCloudException {
 		super();
 		this.vapp = vapp;
+		metadata = this.vapp.getMetadata();
 
 		this.vcloudClient = vcloudClient;
 		init();
 	}
+
+
+	protected void setMetadata(String k,String v) throws VCloudException{
+
+		metadata.updateMetadataEntry(k, v);
+	}
+
+	protected HashMap<String,String> getMetadata() throws VCloudException{
+
+		return metadata.getMetadataEntries();
+	}
+
+
+
 
 	public String getName() throws VCloudException {
 		return vapp.getReference().getName();
@@ -129,6 +154,8 @@ public class VApp {
 	}
 
 	private void init() throws VCloudException {
+		_name=getName();
+
 		// VMに関するINIT
 		List<VM> vms = vapp.getChildrenVms();
 		for (VM vm : vms) {
@@ -143,6 +170,8 @@ public class VApp {
 
 
 		mapUser();
+
+
 
 	}
 
@@ -198,5 +227,34 @@ public class VApp {
 
 		return r;
 	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		VApp other = (VApp) obj;
+		if (_name == null) {
+			if (other._name != null)
+				return false;
+		} else if (!_name.equals(other._name))
+			return false;
+		return true;
+	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((_name == null) ? 0 : _name.hashCode());
+		return result;
+	}
+
+
 
 }

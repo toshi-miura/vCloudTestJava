@@ -6,6 +6,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,6 +49,7 @@ public class VMDetailsMapper {
 		this.vcloudClient = Util.login(url, user, pass);
 	}
 
+	private HashMap<String, Set<VApp> > vappMap = new HashMap<String, Set<VApp>>();
 
 
 	public void run() throws HttpException, VCloudException,
@@ -64,13 +66,14 @@ public class VMDetailsMapper {
 					.getVdcRefs()) {
 
 				Vdc vdc = Vdc.getVdcByReference(vcloudClient, vdcRef);
-				System.out.println("Vdc : " + vdcRef.getName() + " : "
-						+ vdc.getResource().getAllocationModel());
+
 
 				for (ReferenceType vAppRef : Vdc.getVdcByReference(
 						vcloudClient, vdcRef).getVappRefs()) {
 
 					VApp vApp = mapVApp( vAppRef);
+
+					put(vdcRef.getName() , vApp);
 					System.out.println(vApp);
 
 				}
@@ -80,15 +83,30 @@ public class VMDetailsMapper {
 
 	}
 
+
+
+	private void put(String vcdName,VApp app){
+		Set<VApp> set = vappMap.get(vcdName);
+		if(set ==null){
+			set =new HashSet<VApp>();
+			vappMap.put(vcdName, set);
+			System.out.println("PUT NEW VCD:"+vcdName);
+		}
+		set.add(app);
+		System.out.println(set.size());
+
+	}
+
 	public VApp mapVApp(  ReferenceType vAppRef)
 			throws VCloudException {
 
 
+		/*
 		  System.out.println("	Vapp_OtherAttributes : " +
 		  vAppRef.getOtherAttributes().size());
 		  System.out.println("	Vapp_VCloudExtension : " +
 		  vAppRef.getVCloudExtension().size());
-
+		*/
 
 
 		  // vcloudClient.getVcloudAdmin()ext.
@@ -96,29 +114,9 @@ public class VMDetailsMapper {
 
 
 
-		//TODO
-		//説明のフィールドを利用する手もあり
-
-
 
 
 		Vapp vapp = Vapp.getVappByReference(vcloudClient, vAppRef);
-
-		Metadata metadata = vapp.getMetadata();
-
-		System.out.println("★"+ metadata.getMetadataEntries().size());
-		
-		Set<Entry<String,String>> entrySet = metadata.getMetadataEntries().entrySet();
-		for (Entry<String,String> e : entrySet) {
-			System.out.println(e.getKey()+"    "+e.getValue());
-
-		}
-
-
-		metadata.updateMetadataEntry("登録済み", "YES");
-		metadata.updateMetadataEntry("プロジェクトは？", "Cです。");
-		metadata.updateMetadataEntry("課金額は？", "XXXXです");
-		metadata.updateMetadataEntry("ほげほげ", "ほげほげ");
 
 
 		VApp app = new VApp(vapp,vcloudClient);
@@ -130,7 +128,13 @@ public class VMDetailsMapper {
 
 	}
 
+	public HashMap<String, Set<VApp>> getVappMap() {
+		return vappMap;
+	}
 
 
+	public Set<VApp> getVappSet(String vcdNamd) {
+		return vappMap.get(vcdNamd);
+	}
 
 }
