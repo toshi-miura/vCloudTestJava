@@ -32,14 +32,14 @@ public class VMDetailsMapperTest {
 
 			{
 				Set<VApp> vappSet = mapper.getVappSet("KAIGIV5");
-				System.err.println(vappSet.size());
+
 
 				for (VApp vApp : vappSet) {
 					System.out.println(vApp);
 				}
 			}
 
-			{
+			if(false){
 				HashMap<String, Set<VApp>> vappMap = mapper.getVappMap();
 
 				for (String str : vappMap.keySet()) {
