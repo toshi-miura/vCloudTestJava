@@ -137,6 +137,12 @@ public class VMDetailsMapper {
 
 	}
 
+	/**
+	 * 指定されたユーザがオーナのvAPPを返す。
+	 * @param vappSet
+	 * @param userid
+	 * @return
+	 */
 	private static Set<VApp> filterOnwer(Set<VApp> vappSet, String userid) {
 		Set<VApp> resultSet = new HashSet<VApp>();
 		for (VApp vApp : vappSet) {
@@ -148,6 +154,12 @@ public class VMDetailsMapper {
 
 	}
 
+	/**
+	 * 指定されたユーザがアクセス可能なvAPPを返す。
+	 * @param vappSet
+	 * @param userid
+	 * @return
+	 */
 	private static Set<VApp> filterUser(Set<VApp> vappSet, String userid) {
 		Set<VApp> resultSet = new HashSet<VApp>();
 		for (VApp vApp : vappSet) {
