@@ -1,6 +1,5 @@
 package my;
 
-import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -10,8 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import mydata.VApp;
-
-import org.apache.http.HttpException;
 
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.sdk.Organization;
@@ -45,10 +42,9 @@ public class VMDetailsMapper {
 
 	private final HashMap<String, Set<VApp>> vappMap = new HashMap<String, Set<VApp>>();
 
-	public void run() throws HttpException, VCloudException, IOException,
-			KeyManagementException, NoSuchAlgorithmException,
-			UnrecoverableKeyException, KeyStoreException {
+	public synchronized void run() throws VCloudException {
 
+		vappMap.clear();
 		HashMap<String, ReferenceType> orgsList = vcloudClient
 				.getOrgRefsByName();
 		for (ReferenceType orgRef : orgsList.values()) {
@@ -61,7 +57,7 @@ public class VMDetailsMapper {
 				for (ReferenceType vAppRef : Vdc.getVdcByReference(
 						vcloudClient, vdcRef).getVappRefs()) {
 
-					VApp vApp = mapVApp(vAppRef);
+					VApp vApp = mapVApp(vdcRef.getName(), vAppRef);
 
 					put(vdcRef.getName(), vApp);
 
@@ -69,6 +65,32 @@ public class VMDetailsMapper {
 
 			}
 		}
+
+	}
+
+	public VApp refresh(VApp vapp) throws VCloudException {
+
+		Vapp vcdVapp = vapp.getVcdVapp();
+
+		ReferenceType reference = vcdVapp.getReference();
+		VApp newApp = mapVApp(vapp.getVcdName(), reference);
+		synchronized (this) {
+
+			vappMap.get(vapp.getVcdName()).remove(vapp);
+			vappMap.get(newApp.getVcdName()).add(newApp);
+
+		}
+		return newApp;
+	}
+
+	public Set<VApp> refresh(Set<? extends VApp> vappSet)
+			throws VCloudException {
+
+		Set<VApp> result = new HashSet<VApp>();
+		for (VApp vApp2 : vappSet) {
+			result.add(refresh(vApp2));
+		}
+		return result;
 
 	}
 
@@ -83,7 +105,8 @@ public class VMDetailsMapper {
 
 	}
 
-	private VApp mapVApp(ReferenceType vAppRef) throws VCloudException {
+	private VApp mapVApp(String vcdName, ReferenceType vAppRef)
+			throws VCloudException {
 
 		/*
 		 * System.out.println("	Vapp_OtherAttributes : " +
@@ -97,17 +120,17 @@ public class VMDetailsMapper {
 
 		Vapp vapp = Vapp.getVappByReference(vcloudClient, vAppRef);
 
-		VApp app = new VApp(vapp, vcloudClient);
+		VApp app = new VApp(vcdName, vapp, vcloudClient);
 
 		return app;
 
 	}
 
-	public HashMap<String, Set<VApp>> getVappMap() {
+	public synchronized HashMap<String, Set<VApp>> getVappMap() {
 		return vappMap;
 	}
 
-	public Set<VApp> getVappSet(String vcdNamd) {
+	public synchronized Set<VApp> getVappSet(String vcdNamd) {
 		return vappMap.get(vcdNamd);
 	}
 
@@ -117,7 +140,8 @@ public class VMDetailsMapper {
 	 * @param userid
 	 * @return
 	 */
-	public HashMap<String, Set<VApp>> getVappSetByUser(String userid) {
+	public synchronized HashMap<String, Set<VApp>> getVappSetByUser(
+			String userid) {
 
 		throw new IllegalStateException("未実装。呼ぶな");
 
@@ -126,7 +150,7 @@ public class VMDetailsMapper {
 	/**
 	 *
 	 */
-	public Set<VApp> getVappSetByUser(String vcdNamd, String userid) {
+	public synchronized Set<VApp> getVappSetByUser(String vcdNamd, String userid) {
 		Set<VApp> vappSet = getVappSet(vcdNamd);
 		Set<VApp> resultSet = new HashSet<VApp>();
 
@@ -137,16 +161,47 @@ public class VMDetailsMapper {
 
 	}
 
+	public synchronized Set<VApp> getVappSetByName(String vcdNamd,
+			String userid, String vAppName) throws VCloudException {
+		Set<VApp> vappSet = getVappSet(vcdNamd);
+		Set<VApp> tempSet = new HashSet<VApp>();
+
+		tempSet.addAll(filterOnwer(vappSet, userid));
+		tempSet.addAll(filterUser(vappSet, userid));
+
+		return filterVappName(vappSet, vAppName);
+
+	}
+
 	/**
 	 * 指定されたユーザがオーナのvAPPを返す。
 	 * @param vappSet
 	 * @param userid
 	 * @return
 	 */
-	private static Set<VApp> filterOnwer(Set<VApp> vappSet, String userid) {
+	private Set<VApp> filterOnwer(Set<VApp> vappSet, String userid) {
 		Set<VApp> resultSet = new HashSet<VApp>();
 		for (VApp vApp : vappSet) {
 			if (userid.equals(vApp.getOwner().getNameInSource())) {
+				resultSet.add(vApp);
+			}
+		}
+		return resultSet;
+
+	}
+
+	/**
+	 * 指定されたユーザがオーナのvAPPを返す。
+	 * @param vappSet
+	 * @param userid
+	 * @return
+	 * @throws VCloudException
+	 */
+	private Set<VApp> filterVappName(Set<VApp> vappSet, String vappName)
+			throws VCloudException {
+		Set<VApp> resultSet = new HashSet<VApp>();
+		for (VApp vApp : vappSet) {
+			if (vApp.getName().startsWith(vappName)) {
 				resultSet.add(vApp);
 			}
 		}
@@ -160,7 +215,7 @@ public class VMDetailsMapper {
 	 * @param userid
 	 * @return
 	 */
-	private static Set<VApp> filterUser(Set<VApp> vappSet, String userid) {
+	private Set<VApp> filterUser(Set<VApp> vappSet, String userid) {
 		Set<VApp> resultSet = new HashSet<VApp>();
 		for (VApp vApp : vappSet) {
 			if (userid.equals(vApp.getOwner().getNameInSource())) {

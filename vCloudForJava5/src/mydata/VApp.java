@@ -2,7 +2,6 @@ package mydata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +15,6 @@ import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.VM;
 import com.vmware.vcloud.sdk.Vapp;
 import com.vmware.vcloud.sdk.VcloudClient;
-import com.vmware.vcloud.sdk.VirtualDisk;
 import com.vmware.vcloud.sdk.admin.User;
 
 /**
@@ -27,30 +25,45 @@ import com.vmware.vcloud.sdk.admin.User;
  */
 public class VApp {
 
-	private Vapp vapp;
+	protected Vapp vapp;
+	protected String vcdName;
 
-	private String extProjCode;
-	private Map<String, mydata.VM> vmMap = new HashMap<String, mydata.VM>();
+	protected Map<String, mydata.VM> vmMap = new HashMap<String, mydata.VM>();
 
-	private mydata.User owner;
-	private List<mydata.User> users = new ArrayList<mydata.User>();
+	protected mydata.User owner;
+	protected List<mydata.User> users = new ArrayList<mydata.User>();
 
-	private VcloudClient vcloudClient;
+	protected VcloudClient vcloudClient;
 
-	private Metadata metadata;
+	protected Metadata metadata;
+
+	/**
+	 * update用のテンポラリキャッシュ
+	 */
+	protected HashMap<String, String> updateMap = new HashMap<String, String>();
 
 	/**
 	 * equals実装用のテンポラリフィールド
 	 */
 	private String _name;
 
-	public VApp(Vapp vapp, VcloudClient vcloudClient) throws VCloudException {
+	protected VApp() {
+	}
+
+	public VApp(String vcdName, Vapp vapp, VcloudClient vcloudClient)
+			throws VCloudException {
 		super();
 		this.vapp = vapp;
+		this.vcdName = vcdName;
 		metadata = this.vapp.getMetadata();
 
 		this.vcloudClient = vcloudClient;
 		init();
+	}
+
+	public VApp(VApp app) throws VCloudException {
+
+		this(app.vcdName, app.vapp, app.vcloudClient);
 	}
 
 	protected void setMetadata(String k, String v) throws VCloudException {
@@ -63,16 +76,51 @@ public class VApp {
 		return metadata.getMetadataEntries();
 	}
 
+	public String getMetadataStr(String k) throws VCloudException {
+
+		if (updateMap.containsKey(k)) {
+
+			return updateMap.get(k);
+		} else {
+			return metadata.getMetadataEntry(k);
+		}
+	}
+
+	public int getMetadataInt(String k) throws VCloudException {
+
+		return Integer.parseInt(getMetadataStr(k));
+	}
+
+	public void setMetadataStr(String k, String val) throws VCloudException {
+
+		String entry = "";
+		try {
+			entry = getMetadataStr(k);
+		} catch (Exception e) {
+		}
+
+		// 値が変わっていた場合のみアップデート
+		if (!val.equals(entry)) {
+			updateMap.put(k, val);
+			// metadata.updateMetadataEntry(k, val);
+		}
+	}
+
+	public void metadataUpdate() throws VCloudException {
+		if (updateMap.size() != 0) {
+			metadata.updateMetadataEntries(updateMap);
+
+		}
+
+	}
+
+	public void setMetadataInt(String k, int val) throws VCloudException {
+
+		setMetadataStr(k, Integer.toString(val));
+	}
+
 	public String getName() throws VCloudException {
 		return vapp.getReference().getName();
-	}
-
-	public String getExtProjCode() {
-		return extProjCode;
-	}
-
-	public void setExtProjCode(String extProjCode) {
-		this.extProjCode = extProjCode;
 	}
 
 	public Map<String, mydata.VM> getVmMap() {
@@ -114,6 +162,19 @@ public class VApp {
 
 	}
 
+	public String toBaseString() {
+		try {
+			return "APPNAME:	" + getName() + "\t" + "owner:	" + owner + "\t"
+					+ "VMNo:	" + vmMap.size() + "\t" + "CPUNum:	" + getCpu()
+					+ "\t" + "MemNum:	" + getMemorySizeMB() + "\t" + "HDDNum:	"
+					+ getTotalHDDGB();
+		} catch (VCloudException e) {
+
+			e.printStackTrace();
+			return e.getMessage();
+		}
+	}
+
 	@Override
 	public String toString() {
 
@@ -141,9 +202,8 @@ public class VApp {
 		}
 	}
 
-	public void setVapp(Vapp vapp) throws VCloudException {
-		this.vapp = vapp;
-		init();
+	public Vapp getVcdVapp() {
+		return vapp;
 	}
 
 	private void init() throws VCloudException {
@@ -243,6 +303,10 @@ public class VApp {
 		int result = 1;
 		result = prime * result + ((_name == null) ? 0 : _name.hashCode());
 		return result;
+	}
+
+	public String getVcdName() {
+		return vcdName;
 	}
 
 }

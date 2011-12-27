@@ -5,20 +5,20 @@ import com.vmware.vcloud.sdk.VirtualDisk;
 import com.vmware.vcloud.sdk.constants.VMStatus;
 
 /**
- * VMレベルでの管理をするか要検討。 仕様を単純化し、VAPPのレイヤーでしか対応しない方法は一考の余地あり。
+ * VMレベルでの管理をするか要検討。
+ * 仕様を単純化し、VAPPのレイヤーでしか対応しない方法は一考の余地あり。
+ *
  *
  * @author user
  *
  */
 public class VM {
 
-	private com.vmware.vcloud.sdk.VM vm;
+	private final com.vmware.vcloud.sdk.VM vm;
 
 	public VM(com.vmware.vcloud.sdk.VM vm) {
 		super();
 		this.vm = vm;
-
-
 
 	}
 
@@ -58,8 +58,8 @@ public class VM {
 	public String toString() {
 
 		try {
-			return "VM:	"+getName() + "	CPU:" + getCpu() + "	MEM:" + getMemorySizeMB() + "	HDD:"
-					+ getTotalHDDGB();
+			return "VM:	" + getName() + "	CPU:" + getCpu() + "	MEM:"
+					+ getMemorySizeMB() + "	HDD:" + getTotalHDDGB();
 		} catch (VCloudException e) {
 			return e.getMessage();
 		}
