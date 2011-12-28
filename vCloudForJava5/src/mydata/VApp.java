@@ -82,7 +82,9 @@ public class VApp {
 
 			return updateMap.get(k);
 		} else {
-			return metadata.getMetadataEntry(k);
+			HashMap<String, String> metadataEntries = metadata
+					.getMetadataEntries();
+			return metadataEntries.get(k);
 		}
 	}
 
@@ -162,11 +164,33 @@ public class VApp {
 
 	}
 
+	/**
+	 * 人間判読用。
+	 * このVAPPの情報のみ。
+	 * toStringはこの情報も出す
+	 * @return
+	 */
 	public String toBaseString() {
 		try {
 			return "APPNAME:	" + getName() + "\t" + "owner:	" + owner + "\t"
 					+ "VMNo:	" + vmMap.size() + "\t" + "CPUNum:	" + getCpu()
 					+ "\t" + "MemNum:	" + getMemorySizeMB() + "\t" + "HDDNum:	"
+					+ getTotalHDDGB();
+		} catch (VCloudException e) {
+
+			e.printStackTrace();
+			return e.getMessage();
+		}
+	}
+
+	/**
+	 * 文字列での状態比較用
+	 * @return
+	 */
+	public String toBaseSimpleInfo() {
+		try {
+			return getName() + "\t" + owner + "\t" + vmMap.size() + "\t"
+					+ getCpu() + "\t" + getMemorySizeMB() + "\t"
 					+ getTotalHDDGB();
 		} catch (VCloudException e) {
 

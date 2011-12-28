@@ -42,6 +42,11 @@ public class VMDetailsMapper {
 
 	private final HashMap<String, Set<VApp>> vappMap = new HashMap<String, Set<VApp>>();
 
+	public Set<String> getVCDNameSet() {
+		return vappMap.keySet();
+
+	}
+
 	public synchronized void run() throws VCloudException {
 
 		vappMap.clear();
