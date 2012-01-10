@@ -1,4 +1,4 @@
-package mydata;
+package base.mydata;
 
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.VirtualDisk;

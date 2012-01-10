@@ -1,4 +1,4 @@
-package mydata;
+package base.mydata;
 
 import java.util.List;
 import java.util.Map;

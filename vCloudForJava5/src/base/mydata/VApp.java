@@ -1,4 +1,4 @@
-package mydata;
+package base.mydata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,10 +28,10 @@ public class VApp {
 	protected Vapp vapp;
 	protected String vcdName;
 
-	protected Map<String, mydata.VM> vmMap = new HashMap<String, mydata.VM>();
+	protected Map<String, base.mydata.VM> vmMap = new HashMap<String, base.mydata.VM>();
 
-	protected mydata.User owner;
-	protected List<mydata.User> users = new ArrayList<mydata.User>();
+	protected base.mydata.User owner;
+	protected List<base.mydata.User> users = new ArrayList<base.mydata.User>();
 
 	protected VcloudClient vcloudClient;
 
@@ -135,15 +135,15 @@ public class VApp {
 		return vapp.getReference().getName();
 	}
 
-	public Map<String, mydata.VM> getVmMap() {
+	public Map<String, base.mydata.VM> getVmMap() {
 		return vmMap;
 	}
 
-	public mydata.User getOwner() {
+	public base.mydata.User getOwner() {
 		return owner;
 	}
 
-	public List<mydata.User> getUsers() {
+	public List<base.mydata.User> getUsers() {
 		return users;
 	}
 
@@ -151,8 +151,8 @@ public class VApp {
 	 * オーナーと使用権限を持っている人すべて。
 	 * @return
 	 */
-	public List<mydata.User> getAllUsers() {
-		ArrayList<mydata.User> list = new ArrayList<mydata.User>();
+	public List<base.mydata.User> getAllUsers() {
+		ArrayList<base.mydata.User> list = new ArrayList<base.mydata.User>();
 		list.addAll(getUsers());
 		list.add(getOwner());
 		return list;
@@ -161,7 +161,7 @@ public class VApp {
 	public int getCpu() throws VCloudException {
 
 		int sum = 0;
-		for (mydata.VM vm : vmMap.values()) {
+		for (base.mydata.VM vm : vmMap.values()) {
 			sum += vm.getCpu();
 		}
 		return sum;
@@ -169,7 +169,7 @@ public class VApp {
 
 	public int getMemorySizeMB() throws VCloudException {
 		int sum = 0;
-		for (mydata.VM vm : vmMap.values()) {
+		for (base.mydata.VM vm : vmMap.values()) {
 			sum += vm.getMemorySizeMB();
 		}
 		return sum;
@@ -178,7 +178,7 @@ public class VApp {
 
 	public int getTotalHDDGB() throws VCloudException {
 		int sum = 0;
-		for (mydata.VM vm : vmMap.values()) {
+		for (base.mydata.VM vm : vmMap.values()) {
 			sum += vm.getTotalHDDGB();
 		}
 		return sum;
@@ -231,12 +231,12 @@ public class VApp {
 			StringBuilder sbBuilder = new StringBuilder();
 
 			int i = 0;
-			for (mydata.VM vm : vmMap.values()) {
+			for (base.mydata.VM vm : vmMap.values()) {
 				sbBuilder.append("no" + i++ + "\t").append(vm).append("\n");
 			}
 
 			int j = 0;
-			for (mydata.User user : users) {
+			for (base.mydata.User user : users) {
 				sbBuilder.append("user" + j++ + "\t").append(user).append("\n");
 			}
 
@@ -262,7 +262,7 @@ public class VApp {
 		}
 
 		// OWNER関連
-		mydata.User owner = getVAppOwner();
+		base.mydata.User owner = getVAppOwner();
 
 		this.owner = owner;
 
@@ -285,7 +285,7 @@ public class VApp {
 
 				User user = User.getUserByReference(vcloudClient, subject);
 				UserType resource = user.getResource();
-				mydata.User r = new mydata.User(resource);
+				base.mydata.User r = new base.mydata.User(resource);
 
 				users.add(r);
 
@@ -296,16 +296,16 @@ public class VApp {
 
 	private void mapVM(VM vmwareVm) throws VCloudException {
 
-		mydata.VM vm = new mydata.VM(vmwareVm);
+		base.mydata.VM vm = new base.mydata.VM(vmwareVm);
 
 		vmMap.put(vm.getName(), vm);
 
 	}
 
-	private mydata.User getVAppOwner() {
+	private base.mydata.User getVAppOwner() {
 
 		ReferenceType vAppRef = vapp.getReference();
-		mydata.User r;
+		base.mydata.User r;
 
 		try {
 			ReferenceType owner = Vapp.getOwner(vcloudClient, vAppRef);
@@ -313,13 +313,13 @@ public class VApp {
 
 			UserType resource = user.getResource();
 
-			r = new mydata.User(resource);
+			r = new base.mydata.User(resource);
 		} catch (VCloudException e) {
 			// エラーの原因
 			// 現状見えているのは権限不足
 			// マスターユーザーのものは見えないようだ。
 
-			r = mydata.User.VCD_MASTER;
+			r = base.mydata.User.VCD_MASTER;
 		}
 
 		return r;

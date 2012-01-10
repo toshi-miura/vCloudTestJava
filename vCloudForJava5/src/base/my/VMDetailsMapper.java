@@ -1,4 +1,4 @@
-package my;
+package base.my;
 
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -8,10 +8,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import mydata.VApp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import base.mydata.VApp;
 
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.sdk.Organization;
