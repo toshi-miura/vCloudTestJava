@@ -88,9 +88,19 @@ public class VApp {
 		}
 	}
 
+	/**
+	 * 未設定の場合は、-1を返す。
+	 * @param k
+	 * @return
+	 * @throws VCloudException
+	 */
 	public int getMetadataInt(String k) throws VCloudException {
-
-		return Integer.parseInt(getMetadataStr(k));
+		String str = getMetadataStr(k);
+		if (str != null && str.equals("")) {
+			return Integer.parseInt(str);
+		} else {
+			return -1;
+		}
 	}
 
 	public void setMetadataStr(String k, String val) throws VCloudException {
@@ -135,6 +145,17 @@ public class VApp {
 
 	public List<mydata.User> getUsers() {
 		return users;
+	}
+
+	/**
+	 * オーナーと使用権限を持っている人すべて。
+	 * @return
+	 */
+	public List<mydata.User> getAllUsers() {
+		ArrayList<mydata.User> list = new ArrayList<mydata.User>();
+		list.addAll(getUsers());
+		list.add(getOwner());
+		return list;
 	}
 
 	public int getCpu() throws VCloudException {

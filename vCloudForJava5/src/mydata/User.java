@@ -22,16 +22,15 @@ import com.vmware.vcloud.api.rest.schema.VCloudExtensionType;
  *
  */
 public class User {
-	private UserType vcdUserType;
+	private final UserType vcdUserType;
 
 	public final static User VCD_MASTER = new User();
-
 
 	/**
 	 * 通常は使わない
 	 */
 	private User() {
-		UserType dummy=new UserType();
+		UserType dummy = new UserType();
 		this.vcdUserType = dummy;
 
 		dummy.setId("DUMMY_ID");
@@ -42,12 +41,9 @@ public class User {
 		dummy.setTelephone("000-0000-0000");
 	}
 
-
 	public User(UserType vcdUserType) {
 		this.vcdUserType = vcdUserType;
 	}
-
-
 
 	public String getAlertEmail() {
 		return vcdUserType.getAlertEmail();
@@ -129,6 +125,7 @@ public class User {
 		return vcdUserType.getVCloudExtension();
 	}
 
+	@Override
 	public int hashCode() {
 		return vcdUserType.hashCode();
 	}
@@ -249,8 +246,11 @@ public class User {
 		vcdUserType.setType(value);
 	}
 
+	@Override
 	public String toString() {
-		return getNameInSource() +":"+getEmailAddress()+":"+getFullName()+":"+getTelephone();
+
+		return getNameInSource() + "\t" + getEmailAddress() + "\t"
+				+ getFullName() + "\t" + getTelephone();
 	}
 
 }

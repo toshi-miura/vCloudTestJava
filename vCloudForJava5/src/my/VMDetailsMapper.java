@@ -10,6 +10,9 @@ import java.util.Set;
 
 import mydata.VApp;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -19,14 +22,13 @@ import com.vmware.vcloud.sdk.Vdc;
 
 /**
  * TODO
- * <li>シングルトン的にする。</li>
- * <li>キャッシュのマネージャ的なものにする</li>
  * <li>耐久試験（接続維持時間）を調べる</li>
- * <li>clientのリロード機能を入れる</li>
  *
  *
  */
 public class VMDetailsMapper {
+
+	private static Logger log = LoggerFactory.getLogger(VMDetailsMapper.class);
 
 	private final VcloudClient vcloudClient;
 
@@ -136,7 +138,8 @@ public class VMDetailsMapper {
 	}
 
 	public synchronized Set<VApp> getVappSet(String vcdNamd) {
-		return vappMap.get(vcdNamd);
+
+		return new HashSet<VApp>(vappMap.get(vcdNamd));
 	}
 
 	/**
