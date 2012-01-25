@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.vmware.vcloud.api.rest.schema.AccessSettingType;
 import com.vmware.vcloud.api.rest.schema.AccessSettingsType;
 import com.vmware.vcloud.api.rest.schema.ControlAccessParamsType;
@@ -96,7 +98,7 @@ public class VApp {
 	 */
 	public int getMetadataInt(String k) throws VCloudException {
 		String str = getMetadataStr(k);
-		if (str != null && str.equals("")) {
+		if (str != null && !str.equals("")) {
 			return Integer.parseInt(str);
 		} else {
 			return -1;
@@ -118,6 +120,10 @@ public class VApp {
 		}
 	}
 
+	/**
+	 * 更新対象がない場合は更新しない
+	 * @throws VCloudException
+	 */
 	public void metadataUpdate() throws VCloudException {
 		if (updateMap.size() != 0) {
 			metadata.updateMetadataEntries(updateMap);
@@ -156,6 +162,26 @@ public class VApp {
 		list.addAll(getUsers());
 		list.add(getOwner());
 		return list;
+	}
+
+	/**
+	 * すべての人間のメールアドレス。
+	 * @return
+	 */
+	public List<String> getAllMailAddress() {
+
+		List<base.mydata.User> allUsers = getAllUsers();
+		List<String> transform = Lists.transform(allUsers,
+				new Function<base.mydata.User, String>() {
+					@Override
+					public String apply(base.mydata.User arg0) {
+
+						return arg0.getEmailAddress();
+					}
+				});
+
+		return transform;
+
 	}
 
 	public int getCpu() throws VCloudException {

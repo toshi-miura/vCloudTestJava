@@ -6,14 +6,16 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import base.mydata.VApp;
 
+import com.google.common.base.Joiner;
+import com.vmware.vcloud.api.rest.schema.CapabilitiesType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -34,6 +36,7 @@ public class VMDetailsMapper {
 	private final VcloudClient vcloudClient;
 
 	public VMDetailsMapper(VcloudClient vcloudClient) {
+
 		this.vcloudClient = vcloudClient;
 	}
 
@@ -43,14 +46,42 @@ public class VMDetailsMapper {
 		this.vcloudClient = Util.login(url, user, pass);
 	}
 
+	private void x() throws VCloudException {
+		HashMap<String, ReferenceType> orgsList = vcloudClient
+				.getOrgRefsByName();
+		for (ReferenceType orgRef : orgsList.values()) {
+			for (ReferenceType vdcRef : Organization
+					.getOrganizationByReference(vcloudClient, orgRef)
+					.getVdcRefs()) {
+
+				Vdc vdc = Vdc.getVdcByReference(vcloudClient, vdcRef);
+
+				CapabilitiesType capabilities = vdc.getResource()
+						.getCapabilities();
+
+				for (ReferenceType vAppRef : Vdc.getVdcByReference(
+						vcloudClient, vdcRef).getVappRefs()) {
+
+					VApp vApp = mapVApp(vdcRef.getName(), vAppRef);
+
+					put(vdcRef.getName(), vApp);
+
+				}
+
+			}
+		}
+	}
+
 	private final HashMap<String, Set<VApp>> vappMap = new HashMap<String, Set<VApp>>();
 
-	public Set<String> getVCDNameSet() {
+	public synchronized Set<String> getVCDNameSet() {
 		return vappMap.keySet();
 
 	}
 
 	public synchronized void run() throws VCloudException {
+
+		log.info("run");
 
 		vappMap.clear();
 		HashMap<String, ReferenceType> orgsList = vcloudClient
@@ -76,7 +107,7 @@ public class VMDetailsMapper {
 
 	}
 
-	public VApp refresh(VApp vapp) throws VCloudException {
+	public synchronized VApp refresh(VApp vapp) throws VCloudException {
 
 		Vapp vcdVapp = vapp.getVcdVapp();
 
@@ -91,7 +122,7 @@ public class VMDetailsMapper {
 		return newApp;
 	}
 
-	public Set<VApp> refresh(Set<? extends VApp> vappSet)
+	public synchronized Set<VApp> refresh(Set<? extends VApp> vappSet)
 			throws VCloudException {
 
 		Set<VApp> result = new HashSet<VApp>();
@@ -102,7 +133,7 @@ public class VMDetailsMapper {
 
 	}
 
-	private void put(String vcdName, VApp app) {
+	private synchronized void put(String vcdName, VApp app) {
 		Set<VApp> set = vappMap.get(vcdName);
 		if (set == null) {
 			set = new HashSet<VApp>();
@@ -117,9 +148,9 @@ public class VMDetailsMapper {
 			throws VCloudException {
 
 		/*
-		 * System.out.println("	Vapp_OtherAttributes : " +
+		 * log.info("	Vapp_OtherAttributes : " +
 		 * vAppRef.getOtherAttributes().size());
-		 * System.out.println("	Vapp_VCloudExtension : " +
+		 * log.info("	Vapp_VCloudExtension : " +
 		 * vAppRef.getVCloudExtension().size());
 		 */
 
@@ -139,6 +170,12 @@ public class VMDetailsMapper {
 	}
 
 	public synchronized Set<VApp> getVappSet(String vcdNamd) {
+
+		log.info(vcdNamd);
+		log.info("havaVcd {} ", Joiner.on(",").join(vappMap.keySet()));
+		for (Entry<String, Set<VApp>> e : vappMap.entrySet()) {
+			log.info(" VCDNAME {} vappNo {}", e.getKey(), e.getValue().size());
+		}
 
 		return new HashSet<VApp>(vappMap.get(vcdNamd));
 	}
