@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import base.mydata.VApp;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import com.vmware.vcloud.api.rest.schema.CapabilitiesType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.sdk.Organization;
@@ -26,6 +28,7 @@ import com.vmware.vcloud.sdk.Vdc;
 /**
  * TODO
  * <li>耐久試験（接続維持時間）を調べる</li>
+ * 今のモデルだと、マシン消えない
  *
  *
  */
@@ -34,6 +37,9 @@ public class VMDetailsMapper {
 	private static Logger log = LoggerFactory.getLogger(VMDetailsMapper.class);
 
 	private final VcloudClient vcloudClient;
+
+	private final HashMap<String, Set<VApp>> vappMap = new HashMap<String, Set<VApp>>();
+	private final HashMap<String, Set<VApp>> oldMap = new HashMap<String, Set<VApp>>();
 
 	public VMDetailsMapper(VcloudClient vcloudClient) {
 
@@ -72,8 +78,6 @@ public class VMDetailsMapper {
 		}
 	}
 
-	private final HashMap<String, Set<VApp>> vappMap = new HashMap<String, Set<VApp>>();
-
 	public synchronized Set<String> getVCDNameSet() {
 		return vappMap.keySet();
 
@@ -83,7 +87,9 @@ public class VMDetailsMapper {
 
 		log.info("run");
 
+		oldMap.putAll(vappMap);
 		vappMap.clear();
+
 		HashMap<String, ReferenceType> orgsList = vcloudClient
 				.getOrgRefsByName();
 		for (ReferenceType orgRef : orgsList.values()) {
@@ -104,6 +110,46 @@ public class VMDetailsMapper {
 
 			}
 		}
+
+		diff();
+
+	}
+
+	/**
+	 * 削除されたVAPPの抽出。
+	 * 新規作成は無視する
+	 */
+	public void diff() {
+
+		log.info("diff---------------------------------------------");
+
+		for (String vcdname : this.vappMap.keySet()) {
+
+			Set<VApp> olds = oldMap.get(vcdname);
+			Set<VApp> vapps = vappMap.get(vcdname);
+
+			if (olds != null && vapps != null) {
+				log.info("{OLD:{}     VAPP:{}}", new Object[] { olds.size(),
+						vapps.size() });
+
+				SetView<VApp> difference = Sets.difference(olds, vapps);
+
+				log.info("checkDiff [{}]  DIFFCOUNT:{}", new Object[] {
+						vcdname, difference.size() });
+				for (VApp vApp : difference) {
+					if (oldMap.get(vcdname).contains(vApp)) {
+						log.info("■REMOVE ?? {}", vApp.toBaseString());
+					}
+					if (vappMap.get(vcdname).contains(vApp)) {
+						log.info("■NEW ?? {}", vApp.toBaseString());
+					}
+
+				}
+			}
+
+		}
+
+		log.info("diff---------------------------------------------");
 
 	}
 
