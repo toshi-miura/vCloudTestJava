@@ -1,0 +1,1 @@
+delete  from VCD_USER;
