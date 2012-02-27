@@ -12,7 +12,6 @@ import com.vmware.vcloud.api.rest.schema.AccessSettingsType;
 import com.vmware.vcloud.api.rest.schema.ControlAccessParamsType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.UserType;
-import com.vmware.vcloud.sdk.Metadata;
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.VM;
 import com.vmware.vcloud.sdk.Vapp;
@@ -25,7 +24,7 @@ import com.vmware.vcloud.sdk.admin.User;
  * @author user
  *
  */
-public class VApp {
+public class VApp extends VObj {
 
 	protected Vapp vapp;
 	protected String vcdName;
@@ -37,13 +36,6 @@ public class VApp {
 
 	protected VcloudClient vcloudClient;
 
-	protected Metadata metadata;
-
-	/**
-	 * update用のテンポラリキャッシュ
-	 */
-	protected HashMap<String, String> updateMap = new HashMap<String, String>();
-
 	/**
 	 * equals実装用のテンポラリフィールド
 	 */
@@ -54,10 +46,9 @@ public class VApp {
 
 	public VApp(String vcdName, Vapp vapp, VcloudClient vcloudClient)
 			throws VCloudException {
-		super();
+		super(vapp);
 		this.vapp = vapp;
 		this.vcdName = vcdName;
-		metadata = this.vapp.getMetadata();
 
 		this.vcloudClient = vcloudClient;
 		init();
@@ -68,76 +59,12 @@ public class VApp {
 		this(app.vcdName, app.vapp, app.vcloudClient);
 	}
 
-	protected void setMetadata(String k, String v) throws VCloudException {
-
-		metadata.updateMetadataEntry(k, v);
-	}
-
-	protected HashMap<String, String> getMetadata() throws VCloudException {
-
-		return metadata.getMetadataEntries();
-	}
-
-	public String getMetadataStr(String k) throws VCloudException {
-
-		if (updateMap.containsKey(k)) {
-
-			return updateMap.get(k);
-		} else {
-			HashMap<String, String> metadataEntries = metadata
-					.getMetadataEntries();
-			return metadataEntries.get(k);
-		}
-	}
-
-	/**
-	 * 未設定の場合は、-1を返す。
-	 * @param k
-	 * @return
-	 * @throws VCloudException
-	 */
-	public int getMetadataInt(String k) throws VCloudException {
-		String str = getMetadataStr(k);
-		if (str != null && !str.equals("")) {
-			return Integer.parseInt(str);
-		} else {
-			return -1;
-		}
-	}
-
-	public void setMetadataStr(String k, String val) throws VCloudException {
-
-		String entry = "";
-		try {
-			entry = getMetadataStr(k);
-		} catch (Exception e) {
-		}
-
-		// 値が変わっていた場合のみアップデート
-		if (!val.equals(entry)) {
-			updateMap.put(k, val);
-			// metadata.updateMetadataEntry(k, val);
-		}
-	}
-
-	/**
-	 * 更新対象がない場合は更新しない
-	 * @throws VCloudException
-	 */
-	public void metadataUpdate() throws VCloudException {
-		if (updateMap.size() != 0) {
-			metadata.updateMetadataEntries(updateMap);
-
-		}
-
-	}
-
-	public void setMetadataInt(String k, int val) throws VCloudException {
-
-		setMetadataStr(k, Integer.toString(val));
+	public String getID() throws VCloudException {
+		return vapp.getReference().getId();
 	}
 
 	public String getName() throws VCloudException {
+
 		return vapp.getReference().getName();
 	}
 
@@ -311,6 +238,7 @@ public class VApp {
 
 				User user = User.getUserByReference(vcloudClient, subject);
 				UserType resource = user.getResource();
+				System.out.println(resource.getName());
 				base.mydata.User r = new base.mydata.User(resource);
 
 				users.add(r);

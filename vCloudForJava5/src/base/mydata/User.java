@@ -17,6 +17,8 @@ import com.vmware.vcloud.api.rest.schema.VCloudExtensionType;
  * 権限の概念を管理すべきか・・？
  * 元のモデルでは、別オブジェクトで管理していたが、
  * 管理したくない。
+ * このObjectもメタデータは使えない模様。
+ *
  *
  * @author user
  *

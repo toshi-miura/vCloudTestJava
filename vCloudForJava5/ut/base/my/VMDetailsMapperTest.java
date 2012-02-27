@@ -1,4 +1,4 @@
-package my;
+package base.my;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -20,6 +20,7 @@ import utconf.Conf;
 
 import base.my.VMDetailsMapper;
 import base.mydata.VApp;
+import base.mydata.VObj;
 
 import com.vmware.vcloud.sdk.VCloudException;
 
@@ -56,7 +57,7 @@ public class VMDetailsMapperTest {
 		{
 			Set<VApp> vappSet = mapper.getVappSet("KAIGIV5");
 
-			for (VApp vApp : vappSet) {
+			for (VObj vApp : vappSet) {
 				System.out.println(vApp);
 			}
 		}
@@ -68,7 +69,7 @@ public class VMDetailsMapperTest {
 				Set<VApp> vappSet = vappMap.get(str);
 				System.out.println("★：" + str);
 
-				for (VApp vApp : vappSet) {
+				for (VObj vApp : vappSet) {
 					System.out.println(vApp);
 				}
 
@@ -88,7 +89,7 @@ public class VMDetailsMapperTest {
 		{
 			Set<VApp> vappSet = mapper.getVappSetByUser("KAIGIV5", "miura");
 
-			for (VApp vApp : vappSet) {
+			for (VObj vApp : vappSet) {
 				System.out.println(vApp);
 				assertTrue(true);
 			}
@@ -109,7 +110,7 @@ public class VMDetailsMapperTest {
 		{
 			Set<VApp> vappSet = mapper.getVappSetByUser("KAIGIV5", "fujita");
 
-			for (VApp vApp : vappSet) {
+			for (VObj vApp : vappSet) {
 				System.out.println(vApp);
 				assertTrue(true);
 			}
@@ -135,7 +136,7 @@ public class VMDetailsMapperTest {
 				Set<VApp> vappSet = vappMap.get(str);
 				System.out.println("★：" + str);
 
-				for (VApp vApp : vappSet) {
+				for (VObj vApp : vappSet) {
 					System.out.println(vApp);
 				}
 
