@@ -11,14 +11,11 @@ import java.security.UnrecoverableKeyException;
 import java.util.HashMap;
 import java.util.Set;
 
-
 import org.apache.http.HttpException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import utconf.Conf;
-
-import base.my.VMDetailsMapper;
 import base.mydata.VApp;
 import base.mydata.VObj;
 
