@@ -4,8 +4,10 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -40,6 +42,16 @@ public class VMDetailsMapper {
 
 	private final HashMap<String, Set<VApp>> vappMap = new HashMap<String, Set<VApp>>();
 	private final HashMap<String, Set<VApp>> oldMap = new HashMap<String, Set<VApp>>();
+
+	private DeletedVappHandler handler;
+
+	public DeletedVappHandler getHandler() {
+		return handler;
+	}
+
+	public void setHandler(DeletedVappHandler handler) {
+		this.handler = handler;
+	}
 
 	public VMDetailsMapper(VcloudClient vcloudClient) {
 
@@ -118,8 +130,9 @@ public class VMDetailsMapper {
 	/**
 	 * 削除されたVAPPの抽出。
 	 * 新規作成は無視する
+	 * @throws VCloudException
 	 */
-	public void diff() {
+	public void diff() throws VCloudException {
 
 		log.info("diff---------------------------------------------");
 
@@ -136,15 +149,25 @@ public class VMDetailsMapper {
 
 				log.info("checkDiff [{}]  DIFFCOUNT:{}", new Object[] {
 						vcdname, difference.size() });
+
+				List<VApp> deletedVapp = new ArrayList<>();
 				for (VApp vApp : difference) {
+
 					if (oldMap.get(vcdname).contains(vApp)) {
 						log.info("■REMOVE ?? {}", vApp.toBaseString());
+						deletedVapp.add(vApp);
 					}
+
 					if (vappMap.get(vcdname).contains(vApp)) {
 						log.info("■NEW ?? {}", vApp.toBaseString());
 					}
 
 				}
+
+				if (handler != null) {
+					this.handler.handle(deletedVapp);
+				}
+
 			}
 
 		}
