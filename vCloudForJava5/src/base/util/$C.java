@@ -39,7 +39,7 @@ public class $C {
 			for (V v : l) {
 
 				if (f.$(v)) {
-					System.out.println(v);
+
 					list.add(v);
 				}
 			}

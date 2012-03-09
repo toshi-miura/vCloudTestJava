@@ -19,7 +19,7 @@ import base.mydata.VApp;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-import com.vmware.vcloud.api.rest.schema.CapabilitiesType;
+import com.google.inject.Inject;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -49,6 +49,7 @@ public class VMDetailsMapper {
 		return handler;
 	}
 
+	@Inject
 	public void setHandler(DeletedVappHandler handler) {
 		this.handler = handler;
 	}
@@ -58,36 +59,17 @@ public class VMDetailsMapper {
 		this.vcloudClient = vcloudClient;
 	}
 
+	@Inject
+	public VMDetailsMapper(VcdAccConf conf) throws KeyManagementException,
+			UnrecoverableKeyException, NoSuchAlgorithmException,
+			KeyStoreException, VCloudException {
+		this(conf.HOST, conf.USER, conf.PASS);
+	}
+
 	public VMDetailsMapper(String url, String user, String pass)
 			throws KeyManagementException, UnrecoverableKeyException,
 			NoSuchAlgorithmException, KeyStoreException, VCloudException {
 		this.vcloudClient = Util.login(url, user, pass);
-	}
-
-	private void x() throws VCloudException {
-		HashMap<String, ReferenceType> orgsList = vcloudClient
-				.getOrgRefsByName();
-		for (ReferenceType orgRef : orgsList.values()) {
-			for (ReferenceType vdcRef : Organization
-					.getOrganizationByReference(vcloudClient, orgRef)
-					.getVdcRefs()) {
-
-				Vdc vdc = Vdc.getVdcByReference(vcloudClient, vdcRef);
-
-				CapabilitiesType capabilities = vdc.getResource()
-						.getCapabilities();
-
-				for (ReferenceType vAppRef : Vdc.getVdcByReference(
-						vcloudClient, vdcRef).getVappRefs()) {
-
-					VApp vApp = mapVApp(vdcRef.getName(), vAppRef);
-
-					put(vdcRef.getName(), vApp);
-
-				}
-
-			}
-		}
 	}
 
 	public synchronized Set<String> getVCDNameSet() {
@@ -97,7 +79,7 @@ public class VMDetailsMapper {
 
 	public synchronized void run() throws VCloudException {
 
-		log.info("run");
+		log.info("run with {}", getHandler());
 
 		oldMap.putAll(vappMap);
 		vappMap.clear();
@@ -165,7 +147,15 @@ public class VMDetailsMapper {
 				}
 
 				if (handler != null) {
-					this.handler.handle(deletedVapp);
+
+					if (deletedVapp.size() > 0) {
+						log.info("run deletedHandler");
+						this.handler.handle(deletedVapp);
+					} else {
+						log.info("Don't have deletedVapp....");
+					}
+				} else {
+					log.info("Don't have deletedHandler....");
 				}
 
 			}
@@ -226,9 +216,11 @@ public class VMDetailsMapper {
 		// vcloudClient.getVcloudAdmin()ext.
 		// vcloudClient.getVcloudAdminExtension().
 
+		// TODO
+		System.out.println(vAppRef.getHref());
 		Vapp vapp = Vapp.getVappByReference(vcloudClient, vAppRef);
 
-		VApp app = new VApp(vcdName, vapp, vcloudClient);
+		VApp app = new VApp(vcdName, vAppRef, vapp, vcloudClient);
 
 		return app;
 

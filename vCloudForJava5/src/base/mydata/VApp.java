@@ -33,6 +33,7 @@ public class VApp extends VObj {
 
 	protected base.mydata.User owner;
 	protected List<base.mydata.User> users = new ArrayList<base.mydata.User>();
+	protected ReferenceType ref;
 
 	protected VcloudClient vcloudClient;
 
@@ -44,11 +45,12 @@ public class VApp extends VObj {
 	protected VApp() {
 	}
 
-	public VApp(String vcdName, Vapp vapp, VcloudClient vcloudClient)
-			throws VCloudException {
+	public VApp(String vcdName, ReferenceType vAppRef, Vapp vapp,
+			VcloudClient vcloudClient) throws VCloudException {
 		super(vapp);
 		this.vapp = vapp;
 		this.vcdName = vcdName;
+		this.ref = vAppRef;
 
 		this.vcloudClient = vcloudClient;
 		init();
@@ -56,16 +58,16 @@ public class VApp extends VObj {
 
 	public VApp(VApp app) throws VCloudException {
 
-		this(app.vcdName, app.vapp, app.vcloudClient);
+		this(app.vcdName, app.ref, app.vapp, app.vcloudClient);
 	}
 
 	public String getID() throws VCloudException {
-		return vapp.getReference().getId();
+		return ref.getHref();
 	}
 
 	public String getName() throws VCloudException {
 
-		return vapp.getReference().getName();
+		return ref.getName();
 	}
 
 	public Map<String, base.mydata.VM> getVmMap() {
@@ -238,7 +240,7 @@ public class VApp extends VObj {
 
 				User user = User.getUserByReference(vcloudClient, subject);
 				UserType resource = user.getResource();
-				System.out.println(resource.getName());
+
 				base.mydata.User r = new base.mydata.User(resource);
 
 				users.add(r);
