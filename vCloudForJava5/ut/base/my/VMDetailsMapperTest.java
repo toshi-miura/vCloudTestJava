@@ -15,7 +15,7 @@ import org.apache.http.HttpException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import utconf.Conf;
+import utconf.UTConf;
 import base.mydata.VApp;
 import base.mydata.VObj;
 
@@ -35,7 +35,7 @@ public class VMDetailsMapperTest {
 	@BeforeClass
 	public static void beforClass() throws Exception {
 		try {
-			mapper = new VMDetailsMapper(Conf.HOST, Conf.USER, Conf.PASS);
+			mapper = new VMDetailsMapper(new UTConf());
 			mapper.run();
 		} catch (Exception e) {
 

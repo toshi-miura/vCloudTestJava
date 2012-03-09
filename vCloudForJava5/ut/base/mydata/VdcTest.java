@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import utconf.Conf;
+import utconf.UTConf;
 import base.my.Util;
 
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
@@ -37,7 +37,8 @@ public class VdcTest {
 	@Before
 	public void setUp() throws Exception {
 
-		vcloudClient = Util.login(Conf.HOST, Conf.USER, Conf.PASS);
+		UTConf utConf = new UTConf();
+		vcloudClient = Util.login(utConf.HOST, utConf.USER, utConf.PASS);
 	}
 
 	@After
