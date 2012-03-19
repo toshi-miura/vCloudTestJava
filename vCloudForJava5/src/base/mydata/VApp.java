@@ -19,7 +19,8 @@ import com.vmware.vcloud.sdk.VcloudClient;
 import com.vmware.vcloud.sdk.admin.User;
 
 /**
- * 目的： 必要なパラメータに関しアクセスを簡易化する。 通信が絡むと思われるところをキャッシュする。 必要な拡張フィールドを定義する
+ * 目的： 必要なパラメータに関しアクセスを簡易化する。
+ * 通信が絡むと思われるところをキャッシュする。 必要な拡張フィールドを定義する
  *
  * @author user
  *
