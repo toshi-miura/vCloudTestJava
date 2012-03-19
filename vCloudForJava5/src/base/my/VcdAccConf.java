@@ -1,5 +1,10 @@
 package base.my;
 
+/**
+ *
+ * @author user
+ *
+ */
 public class VcdAccConf {
 
 	public String HOST = "https://IP/";
